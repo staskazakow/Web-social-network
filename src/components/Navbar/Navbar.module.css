@@ -1,0 +1,20 @@
+.nav{
+    grid-area: n;
+    background-color: rgb(26, 40, 115);
+    height: 100vh;
+}
+.item{
+    color: wheat;
+    text-decoration: none;
+    margin-left: 10px;
+}
+.active{
+    color: rgb(231, 16, 16);
+    text-decoration: none;
+    transition: 1s;
+    margin-left: 20px;
+    font-size: 20px;
+}
+.active:hover{
+    margin-left: 20px;
+}
