@@ -1,3 +1,5 @@
+import { userAPI } from "../API/api";
+
 const SET_NEW_POST = "SET-NEW-POST";
 const ADD_POST = "ADD-POST";
 const SET_USER_PROFILE = "SET_USER_PROFILE"
@@ -38,6 +40,15 @@ const ProfileReducer = (state = profile_state, action) => {
       return state;
   }
 };
+export const getProfile = (userId) => {
+  return (dispath) => {
+    if(!userId) userId = 2
+   userAPI.getProfile(userId)
+    .then((res) => {
+    dispath(setUserProfile(res.data))
+    });
+  }
+}
 export const setUserProfile = (profile) => ({
   type:SET_USER_PROFILE,
   profile:profile

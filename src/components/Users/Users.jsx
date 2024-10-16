@@ -35,32 +35,23 @@ const Users = (props) => {
               <span>
                 {e.followed ? (
                   <button
-                  disabled = {props.toogleFollowInProgress.some(id => id === e.id)}
+                    disabled={props.toogleFollowInProgress.some(
+                      (id) => id === e.id
+                    )}
                     className={s.follow__btn}
                     onClick={() => {
-                      props.ToogleFollowProgress(true,e.id)
-                     userAPI.setUnFollow(e.id)
-                        .then((res) => {
-                          if (res.resultCode === 0) {
-                            props.OnFollowChange(e.id);
-                          }
-                          props.ToogleFollowProgress(false,e.id)
-                        });
+                      props.unfollow(e.id);
                     }}
                   >
                     Unfollow
                   </button>
                 ) : (
-                  <button disabled= {props.toogleFollowInProgress.some(id => id === e.id)}
+                  <button
+                    disabled={props.toogleFollowInProgress.some(
+                      (id) => id === e.id
+                    )}
                     onClick={() => {
-                      props.ToogleFollowProgress(true,e.id)
-                      userAPI.setFollow(e.id)
-                        .then((res) => {
-                          if (res.resultCode === 0) {
-                            props.OnFollowChange(e.id);
-                          }
-                          props.ToogleFollowProgress(false,e.id)
-                        });
+                      props.follow(e.id);
                     }}
                     className={s.follow__btn}
                   >

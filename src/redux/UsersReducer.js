@@ -1,3 +1,5 @@
+import { userAPI } from "../API/api";
+
 const TOOGLE_IS_FETCHING = "TOOGLE_IS_FETCHING";
 const FOOLLOW_CHANGE = "FOOLLOW_CHANGE";
 const SET_USERS = "SET_USERS";
@@ -44,6 +46,48 @@ const UsersReducer = (state = Users_state, action) => {
       return state;
   }
 };
+export const getUsers = (currentPage,pageSize) => {
+  return (dispath) => {
+    dispath(ToogleIsFetching(false));
+    userAPI.getUsers(currentPage,pageSize)
+      .then((res) => {
+        dispath(SetUsers(res.items));
+        if (res.totalCount > 100) {
+          dispath(ToogleIsFetching(false));
+          dispath(SetTotalCount(100));
+          dispath(PageChange(currentPage));
+        } else {
+          dispath(ToogleIsFetching(false));
+          dispath(SetTotalCount(res.totalCount));
+          dispath(PageChange(currentPage));
+        }
+      });
+  }
+}
+export const unfollow = (userId) => {
+  return (dispath) => {
+    dispath(ToogleFollowProgress(true,userId))
+                     userAPI.setUnFollow(userId)
+                        .then((res) => {
+                          if (res.resultCode === 0) {
+                            dispath(OnFollowChange(userId));
+                          }
+                          dispath(ToogleFollowProgress(false,userId))
+                        });
+  }
+}
+export const follow = (userId) => {
+  return (dispath) => {
+    dispath(ToogleFollowProgress(true,userId))
+                     userAPI.setFollow(userId)
+                        .then((res) => {
+                          if (res.resultCode === 0) {
+                            dispath(OnFollowChange(userId));
+                          }
+                          dispath(ToogleFollowProgress(false,userId))
+                        });
+  }
+}
 export const ToogleFollowProgress = (progress,userId) => ({
   type: TOOGLE_FOLLOW_PROGRESS,
   progress,
@@ -61,7 +105,7 @@ export const SetTotalCount = (count) => ({
   type: SET_TOTAL_COUNT,
   count: count,
 });
-export const OnFollowChange = (id, followState) => ({
+export const OnFollowChange = (id) => ({
   type: FOOLLOW_CHANGE,
   id: id,
 });

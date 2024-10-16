@@ -1,52 +1,20 @@
 import React from "react";
 import { connect } from "react-redux";
-import {
-  OnFollowChange,
-  PageChange,
-  SetTotalCount,
-  SetUsers,
-  ToogleFollowProgress,
-  ToogleIsFetching,
-} from "../../redux/UsersReducer";
+import { follow, getUsers, unfollow } from "../../redux/UsersReducer";
 import Users from "./Users";
-import axios from "axios";
 import Preloader from "../common/Preloader/Preloader";
-import { getUsers, userAPI } from "../../API/api";
+import { Navigate } from "react-router-dom";
+import { WithAuthRedirect } from "../../hoc/hoc";
+import { compose } from "redux";
 class UsersContainer extends React.Component {
   constructor(props) {
     super(props);
   }
   componentDidMount() {
-    this.props.ToogleIsFetching(false);
-    userAPI.getUsers(this.props.currentPage,this.props.pageSize)
-      .then((res) => {
-        this.props.SetUsers(res.items);
-
-        if (res.totalCount > 100) {
-          this.props.ToogleIsFetching(false);
-          this.props.SetTotalCount(100);
-        } else {
-          this.props.ToogleIsFetching(false);
-          this.props.SetTotalCount(res.totalCount);
-        }
-      });
+    this.props.getUsers(this.props.currentPage, this.props.pageSize);
   }
   SetCurrentPage = (page) => {
-    this.props.ToogleIsFetching(true);
-    this.props.PageChange(page);
-    userAPI.getUsers(this.props.currentPage,this.props.pageSize)
-      .then((res) => {
-        this.props.ToogleIsFetching(false);
-        this.props.SetUsers(res.items);
-        this.props.SetTotalCount(res.totalCount);
-        if (res.totalCount > 100) {
-          this.props.ToogleIsFetching(false);
-          this.props.SetTotalCount(100);
-        } else {
-          this.props.ToogleIsFetching(false);
-          this.props.SetTotalCount(res.totalCount);
-        }
-      });
+    this.props.getUsers(page, this.props.pageSize);
   };
   render() {
     return (
@@ -60,9 +28,9 @@ class UsersContainer extends React.Component {
             SetCurrentPage={this.SetCurrentPage}
             currentPage={this.props.currentPage}
             users={this.props.users}
-            OnFollowChange={this.props.OnFollowChange}
-            ToogleFollowProgress = {this.props.ToogleFollowProgress}
-            toogleFollowInProgress = {this.props.toogleFollowInProgress}
+            follow={this.props.follow}
+            unfollow={this.props.unfollow}
+            toogleFollowInProgress={this.props.toogleFollowInProgress}
           />
         )}
       </>
@@ -75,16 +43,15 @@ const mapStateToProps = (state) => {
     pageSize: state.UsersPage.pageSize,
     totalUsersCount: state.UsersPage.totalUsersCount,
     currentPage: state.UsersPage.currentPage,
-    isFetching: state.UsersPage.isFetching,
     toogleFollowInProgress: state.UsersPage.toogleFollowInProgress,
   };
 };
+export default compose(
+  connect(mapStateToProps, {
+    getUsers,
+    follow,
+    unfollow,
+  }),
+  WithAuthRedirect
+)(UsersContainer);
 
-export default connect(mapStateToProps, {
-  OnFollowChange,
-  SetUsers,
-  PageChange,
-  SetTotalCount,
-  ToogleIsFetching,
-  ToogleFollowProgress
-})(UsersContainer);
